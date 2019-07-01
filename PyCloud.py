@@ -126,6 +126,8 @@ def checkConfig(cryptedIni,uncryptedIni,folder):
 # ========================= Main =========================
 # ========================================================
 
+
+
 # Get home folder
 home = os.path.expanduser('~')
 # Define PyCloud folder
@@ -140,30 +142,38 @@ displayBanner()
 # Check the installation at the begining
 checkConfig(encryptedIni,decryptedIni, pycloudFolder)
 
-# Diplay banner and initial decrypt INI file
-displayBanner()
-password = input("[?] Use password to decrypt ini file : ")
-decryptIni(encryptedIni,decryptedIni,password)
+# Large try
+try:
+
+    # Diplay banner and initial decrypt INI file
+    displayBanner()
+    password = input("[?] Use password to decrypt ini file : ")
+    decryptIni(encryptedIni,decryptedIni,password)
 
 
-displayBanner()
-print(
-"""
-1. Add remote site to configure backup
-2. Change remote site (modify a parameter)
-3. Remove remote 
-4. Check INI file (check if the syntax work properly)
+    displayBanner()
+    print(
+    """
+    1. Add remote site to configure backup
+    2. Change remote site (modify a parameter)
+    3. Remove remote 
+    4. Check INI file (check if the syntax work properly)
 
-99. Quit
-"""
-)
+    99. Quit
+    """
+    )
 
-choice = int(input("[?] Choose an action : "))
+    choice = int(input("[?] Choose an action : "))
 
-if choice == 99:
+    if choice == 99:
+        encryptIni(decryptedIni,encryptedIni,password)
+        print("[+] Successfully encrypted INI file")
+        exit()
+
+# If user quit the script with escape keys, encrypt ini file before quit
+except KeyboardInterrupt:
     encryptIni(decryptedIni,encryptedIni,password)
-    print("[+] Successfully encrypted INI file")
-    exit()
+    print("\n[+] Successfully encrypted INI file before quit the script")
 
 
 
