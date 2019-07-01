@@ -70,8 +70,6 @@ def decryptIni(inputFile,outputFile,password):
 def checkConfig(cryptedIni,uncryptedIni,folder):
 # Function to check if initiale config is present
 
-    # Define the ini file when is decrypted
-    #noncryptedIni = f"{folder}/config.ini"
     
     # If PyCloud folder does not exist, create it and create the ini encrypted file too
     if not os.path.isdir(folder):
@@ -117,66 +115,93 @@ def checkConfig(cryptedIni,uncryptedIni,folder):
             if len(password) > 0:
                 notValid = False
 
-        encryptIni(uncryptedIni,encryptedIni,password)
+        encryptIni(uncryptedIni,cryptedIni,password)
 
     
     return
 
-# ========================================================
-# ========================= Main =========================
-# ========================================================
+# -------------------------------------------> changePassword
+def changePassword(inputFile, currentPwd,newPwd):
 
 
 
-# Get home folder
-home = os.path.expanduser('~')
-# Define PyCloud folder
-pycloudFolder = f"{home}/.PyCloud"
-# Define INI file
-encryptedIni = f"{pycloudFolder}/config.aes"
-decryptedIni = f"{pycloudFolder}/config.ini"
 
-# It's better with a banner ! \o/
-displayBanner()
 
-# Check the installation at the begining
-checkConfig(encryptedIni,decryptedIni, pycloudFolder)
 
-# Large try
-try:
+    return
+
+
+
+def main():
+
+
+# -------------------------------------------------------
+#                  Define some variables                 
+# -------------------------------------------------------
+
+    # Get home folder
+    home = os.path.expanduser('~')
+    # Define PyCloud folder
+    pycloudFolder = f"{home}/.PyCloud"
+    # Define INI file
+    # Extension can be change for the encrypted ini file
+    # The decrypt ini file must have INI extension (for configparser checking)
+    encryptedIni = f"{pycloudFolder}/config.aes"
+    decryptedIni = f"{pycloudFolder}/config.ini"
+
+# --------------------------------------------------------
+# ------------------ Begin of the script -----------------
+# --------------------------------------------------------
+
+    # It's better with a banner ! \o/
+    displayBanner()
+
+    # Check the installation at the begining
+    checkConfig(encryptedIni,decryptedIni, pycloudFolder)
 
     # Diplay banner and initial decrypt INI file
     displayBanner()
     password = input("[?] Use password to decrypt ini file : ")
     decryptIni(encryptedIni,decryptedIni,password)
 
+    # Large try
+    try:
 
-    displayBanner()
-    print(
-    """
-    1. Add remote site to configure backup
-    2. Change remote site (modify a parameter)
-    3. Remove remote 
-    4. Check INI file (check if the syntax work properly)
+        displayBanner()
+        print(
+        """
+        1. Add remote site to configure backup
+        2. Change remote site (modify a parameter)
+        3. Remove remote 
+        4. Change encryption password
 
-    99. Quit
-    """
-    )
+        99. Quit
 
-    choice = int(input("[?] Choose an action : "))
+        """
+        )
 
-    if choice == 99:
+        # Force type to choice
+        choice = int(input("[?] Choose an action : "))
+
+
+        if choice == 4:
+            displayBanner()
+            newPassword = input("[?] Enter the new password : ")
+
+        elif choice == 99:
+            encryptIni(decryptedIni,encryptedIni,password)
+            print("[+] Successfully encrypted INI file")
+            exit()
+
+
+    # If user quit the script with escape keys, encrypt ini file before quit
+    except KeyboardInterrupt:
         encryptIni(decryptedIni,encryptedIni,password)
-        print("[+] Successfully encrypted INI file")
-        exit()
-
-# If user quit the script with escape keys, encrypt ini file before quit
-except KeyboardInterrupt:
-    encryptIni(decryptedIni,encryptedIni,password)
-    print("\n[+] Successfully encrypted INI file before quit the script")
+        print("\n[+] Successfully encrypted INI file before quit the script")
 
 
-
+if __name__ == '__main__':
+    main()
 
 
 
