@@ -4,6 +4,8 @@
 import configparser
 import os
 import time
+import pathlib
+import pyAesCrypt
 
 def displayBanner():
 
