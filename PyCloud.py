@@ -78,6 +78,7 @@ def decryptIni(aes,password):
 def checkConfig(cryptIni,folder):
 # Function to check if initiale config is present
 
+    # Define the ini file when is decrypted
     noncryptedIni = f"{folder}/config.ini"
     
     # If PyCloud folder does not exist, create it and create the ini encrypted file too
