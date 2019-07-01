@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import glob
 import time
 import pathlib
 import pyAesCrypt
@@ -74,29 +75,32 @@ def decryptIni(aes,password):
 
 
 # -------------------------------------------> checkConfig
-def checkConfig(ini,folder):
+def checkConfig(cryptIni,folder):
 # Function to check if initiale config is present
 
-    # If PyCloud folder does not exist, create it and create the ini file too
+    noncryptedIni = f"{folder}/config.ini"
+    
+    # If PyCloud folder does not exist, create it and create the ini encrypted file too
     if not os.path.isdir(folder):
         print(f"[+] PyCloud folder does not exist yet")
         print(f"[+] Create {folder}")
-        print(f"[+] Add ini file {ini}")
+        print(f"[+] Add ini file {cryptIni}")
         os.mkdir(folder)
-        file = open(ini,'w')
+        file = open(noncryptedIni,'w')
         file.close()
+        password = input("[?] Choose a password for the ini file encryption : ")
+        encryptIni(noncryptedIni,password)
         
-    # Else if PyCloud folder exist yet but ini file does not exist
-    elif os.path.isdir(folder) and not os.path.isfile(iniFile):
+    # Else if PyCloud folder exist yet but ini encrypted file does not exist
+    elif os.path.isdir(folder) and not os.path.isfile(cryptIni):
         print(f"[+] Ini file does not exist yet")
-        print(f"[+] Create {ini}")
-        file = open(ini,'w')
-        file.close()   
+        print(f"[+] Create {noncryptedIni}")
+        file = open(noncryptedIni,'w')
+        file.close()
+        password = input("[?] Choose a password for the ini file encryption : ")
+        encryptIni(noncryptedIni,password)
 
-    # Make a sleep before refresh the banner 
-    time.sleep(3)
-    print('ok')
-
+    
     return
 
 # ========================================================
@@ -108,10 +112,10 @@ home = os.path.expanduser('~')
 # Define PyCloud folder
 pycloudFolder = f"{home}/.PyCloud"
 # Define INI file
-iniFile = f"{home}/.PyCloud/config.ini"
+iniFile = f"{home}/.PyCloud/config.aes"
 
 # It's better with a banner ! \o/
-displayBanner()
+#displayBanner()
 
 # Check the installation at the begining
 checkConfig(iniFile, pycloudFolder)
