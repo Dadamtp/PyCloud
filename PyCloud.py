@@ -100,6 +100,17 @@ def checkConfig(cryptIni,folder):
         file = open(noncryptedIni,'w')
         file.close()
         password = input("[?] Choose a password for the ini file encryption : ")
+        # Add error condition if the input password is empty
+        if len(password) == 0:
+            notValid = True
+        # While the password is empty, make a while loop
+        while notValid:
+            displayBanner()
+            print("[!] The encryption password cannot be empty")
+            password = input("[?] Choose a password for the ini file encryption : ")
+            if len(password) > 0:
+                notValid = False
+                            
         encryptIni(noncryptedIni,password)
         
     # Else if PyCloud folder exist yet but ini encrypted file does not exist
@@ -109,6 +120,17 @@ def checkConfig(cryptIni,folder):
         file = open(noncryptedIni,'w')
         file.close()
         password = input("[?] Choose a password for the ini file encryption : ")
+        # Add error condition if the input password is empty
+        if len(password) == 0:
+            notValid = True
+        # While the password is empty, make a while loop
+        while notValid:
+            displayBanner()
+            print("[!] The encryption password cannot be empty")
+            password = input("[?] Choose a password for the ini file encryption : ")
+            if len(password) > 0:
+                notValid = False
+
         encryptIni(noncryptedIni,password)
 
     
