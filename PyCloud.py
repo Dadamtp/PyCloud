@@ -23,6 +23,54 @@ def displayBanner():
 
     return
 
+
+# -------------------------------------------> encryptIni
+def encryptIni(ini,password):
+# Function to encrypt the ini configuration file
+    
+    # Buffer initialization
+    bufferSize = 64 * 1024
+    # Get the basename of ini file
+    baseName = (os.path.basename(ini)).split('.')[0]
+    # Get the parent folder of the ini file
+    parentFolder = pathlib.Path(ini).parent
+    # Define a extension for the encrypted ini file
+    extension = 'aes'
+    # Create the fullname for the encrypted file
+    fullnameCryptedFile = f"{parentFolder}/{baseName}.{extension}"
+    # Crypt the file
+    pyAesCrypt.encryptFile(ini,fullnameCryptedFile,password,bufferSize)
+    # Remove the original file
+    os.remove(ini)
+
+
+    return
+
+# -------------------------------------------> decryptIni
+def decryptIni(aes,password):
+# Function to decrypt ini file
+
+    # Buffer initialization
+    bufferSize = 64 * 1024
+    # Get the basename of the encrypted ini file
+    baseName = (os.path.basename(aes)).split('.')[0]
+    # Get the parent folder of the encrypted ini file
+    parentFolder = pathlib.Path(aes).parent
+    # Define extension for output decrypted file
+    extension = 'ini'
+    # Define the fullname of the decrypted file
+    fullnameDecryptedFile = f"{parentFolder}/{baseName}.{extension}"
+    # Decrypt ini file
+    pyAesCrypt.decryptFile(aes,fullnameDecryptedFile,password,bufferSize)
+    # Remove the original file
+    os.remove(aes)
+
+
+    return 
+
+
+
+
 # -------------------------------------------> checkConfig
 def checkConfig(ini,folder):
 # Function to check if initiale config is present
@@ -35,6 +83,7 @@ def checkConfig(ini,folder):
         os.mkdir(folder)
         file = open(ini,'w')
         file.close()
+        
     # Else if PyCloud folder exist yet but ini file does not exist
     elif os.path.isdir(folder) and not os.path.isfile(iniFile):
         print(f"[+] Ini file does not exist yet")
