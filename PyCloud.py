@@ -26,25 +26,17 @@ def displayBanner():
 
 
 # -------------------------------------------> encryptIni
-def encryptIni(ini,password):
+def encryptIni(inputFile,ouputFile,password):
 # Function to encrypt the ini configuration file
     
     try:
 
         # Buffer initialization
         bufferSize = 64 * 1024
-        # Get the basename of ini file
-        baseName = (os.path.basename(ini)).split('.')[0]
-        # Get the parent folder of the ini file
-        parentFolder = pathlib.Path(ini).parent
-        # Define a extension for the encrypted ini file
-        extension = 'aes'
-        # Create the fullname for the encrypted file
-        fullnameCryptedFile = f"{parentFolder}/{baseName}.{extension}"
         # Crypt the file
-        pyAesCrypt.encryptFile(ini,fullnameCryptedFile,password,bufferSize)
+        pyAesCrypt.encryptFile(inputFile,ouputFile,password,bufferSize)
         # Remove the original file
-        os.remove(ini)
+        os.remove(inputFile)
 
     except Exception as error:
         print(f"[!] {error}")
@@ -53,25 +45,17 @@ def encryptIni(ini,password):
     return
 
 # -------------------------------------------> decryptIni
-def decryptIni(aes,password):
+def decryptIni(inputFile,outputFile,password):
 # Function to decrypt ini file
 
     try:
 
         # Buffer initialization
         bufferSize = 64 * 1024
-        # Get the basename of the encrypted ini file
-        baseName = (os.path.basename(aes)).split('.')[0]
-        # Get the parent folder of the encrypted ini file
-        parentFolder = pathlib.Path(aes).parent
-        # Define extension for output decrypted file
-        extension = 'ini'
-        # Define the fullname of the decrypted file
-        fullnameDecryptedFile = f"{parentFolder}/{baseName}.{extension}"
         # Decrypt ini file
-        pyAesCrypt.decryptFile(aes,fullnameDecryptedFile,password,bufferSize)
+        pyAesCrypt.decryptFile(inputFile,outputFile,password,bufferSize)
         # Remove the original file
-        os.remove(aes)
+        os.remove(inputFile)
 
     # If the password is incorrect...or other exception
     except Exception as error:
@@ -82,27 +66,27 @@ def decryptIni(aes,password):
     return 
 
 
-
-
 # -------------------------------------------> checkConfig
-def checkConfig(cryptIni,folder):
+def checkConfig(cryptedIni,uncryptedIni,folder):
 # Function to check if initiale config is present
 
     # Define the ini file when is decrypted
-    noncryptedIni = f"{folder}/config.ini"
+    #noncryptedIni = f"{folder}/config.ini"
     
     # If PyCloud folder does not exist, create it and create the ini encrypted file too
     if not os.path.isdir(folder):
         print(f"[+] PyCloud folder does not exist yet")
         print(f"[+] Create {folder}")
-        print(f"[+] Add ini file {cryptIni}")
+        print(f"[+] Add ini file {cryptedIni}")
         os.mkdir(folder)
-        file = open(noncryptedIni,'w')
+        file = open(uncryptedIni,'w')
         file.close()
         password = input("[?] Choose a password for the ini file encryption : ")
         # Add error condition if the input password is empty
         if len(password) == 0:
             notValid = True
+        else:
+            notValid = False
         # While the password is empty, make a while loop
         while notValid:
             displayBanner()
@@ -111,18 +95,20 @@ def checkConfig(cryptIni,folder):
             if len(password) > 0:
                 notValid = False
                             
-        encryptIni(noncryptedIni,password)
+        encryptIni(uncryptedIni,cryptedIni,password)
         
     # Else if PyCloud folder exist yet but ini encrypted file does not exist
-    elif os.path.isdir(folder) and not os.path.isfile(cryptIni):
+    elif os.path.isdir(folder) and not os.path.isfile(cryptedIni):
         print(f"[+] Ini file does not exist yet")
-        print(f"[+] Create {noncryptedIni}")
-        file = open(noncryptedIni,'w')
+        print(f"[+] Create {uncryptedIni}")
+        file = open(uncryptedIni,'w')
         file.close()
         password = input("[?] Choose a password for the ini file encryption : ")
         # Add error condition if the input password is empty
         if len(password) == 0:
             notValid = True
+        else:
+            notValid = False
         # While the password is empty, make a while loop
         while notValid:
             displayBanner()
@@ -131,7 +117,7 @@ def checkConfig(cryptIni,folder):
             if len(password) > 0:
                 notValid = False
 
-        encryptIni(noncryptedIni,password)
+        encryptIni(uncryptedIni,encryptedIni,password)
 
     
     return
@@ -145,18 +131,19 @@ home = os.path.expanduser('~')
 # Define PyCloud folder
 pycloudFolder = f"{home}/.PyCloud"
 # Define INI file
-iniFile = f"{home}/.PyCloud/config.aes"
+encryptedIni = f"{pycloudFolder}/config.aes"
+decryptedIni = f"{pycloudFolder}/config.ini"
 
 # It's better with a banner ! \o/
 displayBanner()
 
 # Check the installation at the begining
-checkConfig(iniFile, pycloudFolder)
+checkConfig(encryptedIni,decryptedIni, pycloudFolder)
 
 # Diplay banner and initial decrypt INI file
 displayBanner()
 password = input("[?] Use password to decrypt ini file : ")
-decryptIni(iniFile,password)
+decryptIni(encryptedIni,decryptedIni,password)
 
 
 displayBanner()
@@ -166,11 +153,17 @@ print(
 2. Change remote site (modify a parameter)
 3. Remove remote 
 4. Check INI file (check if the syntax work properly)
+
+99. Quit
 """
 )
 
-input("[?] Choose an action : ")
+choice = int(input("[?] Choose an action : "))
 
+if choice == 99:
+    encryptIni(decryptedIni,encryptedIni,password)
+    print("[+] Successfully encrypted INI file")
+    exit()
 
 
 
