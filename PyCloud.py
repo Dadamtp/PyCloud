@@ -12,7 +12,6 @@ def displayBanner():
 
     os.system('clear')
     print("""
-    
   _____        _____ _                 _ 
  |  __ \      / ____| |               | |
  | |__) |   _| |    | | ___  _   _  __| |
@@ -21,7 +20,6 @@ def displayBanner():
  |_|    \__, |\_____|_|\___/ \__,_|\__,_|
          __/ |                           
         |___/                            
-    
     """)
 
     return
@@ -31,21 +29,26 @@ def displayBanner():
 def encryptIni(ini,password):
 # Function to encrypt the ini configuration file
     
-    # Buffer initialization
-    bufferSize = 64 * 1024
-    # Get the basename of ini file
-    baseName = (os.path.basename(ini)).split('.')[0]
-    # Get the parent folder of the ini file
-    parentFolder = pathlib.Path(ini).parent
-    # Define a extension for the encrypted ini file
-    extension = 'aes'
-    # Create the fullname for the encrypted file
-    fullnameCryptedFile = f"{parentFolder}/{baseName}.{extension}"
-    # Crypt the file
-    pyAesCrypt.encryptFile(ini,fullnameCryptedFile,password,bufferSize)
-    # Remove the original file
-    os.remove(ini)
+    try:
 
+        # Buffer initialization
+        bufferSize = 64 * 1024
+        # Get the basename of ini file
+        baseName = (os.path.basename(ini)).split('.')[0]
+        # Get the parent folder of the ini file
+        parentFolder = pathlib.Path(ini).parent
+        # Define a extension for the encrypted ini file
+        extension = 'aes'
+        # Create the fullname for the encrypted file
+        fullnameCryptedFile = f"{parentFolder}/{baseName}.{extension}"
+        # Crypt the file
+        pyAesCrypt.encryptFile(ini,fullnameCryptedFile,password,bufferSize)
+        # Remove the original file
+        os.remove(ini)
+
+    except Exception as error:
+        print(f"[!] {error}")
+        exit()
 
     return
 
@@ -53,20 +56,27 @@ def encryptIni(ini,password):
 def decryptIni(aes,password):
 # Function to decrypt ini file
 
-    # Buffer initialization
-    bufferSize = 64 * 1024
-    # Get the basename of the encrypted ini file
-    baseName = (os.path.basename(aes)).split('.')[0]
-    # Get the parent folder of the encrypted ini file
-    parentFolder = pathlib.Path(aes).parent
-    # Define extension for output decrypted file
-    extension = 'ini'
-    # Define the fullname of the decrypted file
-    fullnameDecryptedFile = f"{parentFolder}/{baseName}.{extension}"
-    # Decrypt ini file
-    pyAesCrypt.decryptFile(aes,fullnameDecryptedFile,password,bufferSize)
-    # Remove the original file
-    os.remove(aes)
+    try:
+
+        # Buffer initialization
+        bufferSize = 64 * 1024
+        # Get the basename of the encrypted ini file
+        baseName = (os.path.basename(aes)).split('.')[0]
+        # Get the parent folder of the encrypted ini file
+        parentFolder = pathlib.Path(aes).parent
+        # Define extension for output decrypted file
+        extension = 'ini'
+        # Define the fullname of the decrypted file
+        fullnameDecryptedFile = f"{parentFolder}/{baseName}.{extension}"
+        # Decrypt ini file
+        pyAesCrypt.decryptFile(aes,fullnameDecryptedFile,password,bufferSize)
+        # Remove the original file
+        os.remove(aes)
+
+    # If the password is incorrect...or other exception
+    except Exception as error:
+        print(f"[!] {error}")
+        exit()
 
 
     return 
@@ -116,10 +126,30 @@ pycloudFolder = f"{home}/.PyCloud"
 iniFile = f"{home}/.PyCloud/config.aes"
 
 # It's better with a banner ! \o/
-#displayBanner()
+displayBanner()
 
 # Check the installation at the begining
 checkConfig(iniFile, pycloudFolder)
+
+# Diplay banner and initial decrypt INI file
+displayBanner()
+password = input("[?] Use password to decrypt ini file : ")
+decryptIni(iniFile,password)
+
+
+displayBanner()
+print(
+"""
+1. Add remote site to configure backup
+2. Change remote site (modify a parameter)
+3. Remove remote 
+4. Check INI file (check if the syntax work properly)
+"""
+)
+
+input("[?] Choose an action : ")
+
+
 
 
 
