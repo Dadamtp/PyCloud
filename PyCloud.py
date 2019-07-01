@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-
-import configparser
 import os
 import time
 import pathlib
 import pyAesCrypt
+import configparser
+
 
 def displayBanner():
 
