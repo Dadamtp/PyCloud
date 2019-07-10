@@ -6,20 +6,21 @@ import time
 import pathlib
 import pyAesCrypt
 import configparser
+import fstring
 
 
 def displayBanner():
 
     os.system('clear')
     print("""
-  _____        _____ _                 _ 
+  _____        _____ _                 _
  |  __ \      / ____| |               | |
  | |__) |   _| |    | | ___  _   _  __| |
  |  ___/ | | | |    | |/ _ \| | | |/ _` |
  | |   | |_| | |____| | (_) | |_| | (_| |
  |_|    \__, |\_____|_|\___/ \__,_|\__,_|
-         __/ |                           
-        |___/                            
+         __/ |
+        |___/
     """)
 
     return
@@ -28,18 +29,19 @@ def displayBanner():
 # -------------------------------------------> encryptIni
 def encryptIni(inputFile,ouputFile,password):
 # Function to encrypt the ini configuration file
-    
+
     try:
 
         # Buffer initialization
         bufferSize = 64 * 1024
-        # Crypt the file
+        # Crypt the file
         pyAesCrypt.encryptFile(inputFile,ouputFile,password,bufferSize)
-        # Remove the original file
+        # Remove the original file
         os.remove(inputFile)
 
     except Exception as error:
-        print(f"[!] {error}")
+      #  print(f"[!] {error}")
+        print ("[!] ", error )
         exit()
 
     return
@@ -59,27 +61,36 @@ def decryptIni(inputFile,outputFile,password):
 
     # If the password is incorrect...or other exception
     except Exception as error:
-        print(f"[!] {error}")
+        #print(f"[!] {error}")
+        print ("[!] ", error )
         exit()
 
 
-    return 
+    return
 
 
 # -------------------------------------------> checkConfig
 def checkConfig(cryptedIni,uncryptedIni,folder):
 # Function to check if initiale config is present
 
-    
+
     # If PyCloud folder does not exist, create it and create the ini encrypted file too
     if not os.path.isdir(folder):
-        print(f"[+] PyCloud folder does not exist yet")
-        print(f"[+] Create {folder}")
-        print(f"[+] Add ini file {cryptedIni}")
+        #print(f"[+] PyCloud folder does not exist yet")
+        #print(f"[+] Create {folder}")
+        #print(f"[+] Add ini file {cryptedIni}")
+        print("[+] PyCloud folder does not exist yet")
+        print("[+] Create ", folder)
+        print("[+] Add ini file ", cryptedIni)
         os.mkdir(folder)
         file = open(uncryptedIni,'w')
         file.close()
         password = input("[?] Choose a password for the ini file encryption : ")
+
+
+#NOTE: Devrait marché simplement avec un:
+#   while (len(password)) < <0)
+
         # Add error condition if the input password is empty
         if len(password) == 0:
             notValid = True
@@ -92,13 +103,17 @@ def checkConfig(cryptedIni,uncryptedIni,folder):
             password = input("[?] Choose a password for the ini file encryption : ")
             if len(password) > 0:
                 notValid = False
-                            
+
         encryptIni(uncryptedIni,cryptedIni,password)
-        
-    # Else if PyCloud folder exist yet but ini encrypted file does not exist
+
+    # Else if PyCloud folder exist yet but ini encrypted file does not exist
     elif os.path.isdir(folder) and not os.path.isfile(cryptedIni):
-        print(f"[+] Ini file does not exist yet")
-        print(f"[+] Create {uncryptedIni}")
+        #print(f"[+] Ini file does not exist yet")
+        #print(f"[+] Create {uncryptedIni}")
+
+        print("[+] Ini file does not exist yet")
+        print("[+] Create ", uncryptedIni)
+#NOTE: Duplication de code ?
         file = open(uncryptedIni,'w')
         file.close()
         password = input("[?] Choose a password for the ini file encryption : ")
@@ -117,7 +132,7 @@ def checkConfig(cryptedIni,uncryptedIni,folder):
 
         encryptIni(uncryptedIni,cryptedIni,password)
 
-    
+
     return
 
 # -------------------------------------------> changePassword
@@ -162,7 +177,8 @@ def addSite(decrypt,crypt):
             while loop:
                 displayBanner()
                 if not os.path.isdir(folderBackup):
-                    print(f"[!] The folder {folderBackup} does not exist")
+                    #print(f"[!] The folder {folderBackup} does not exist")
+                    print("[!] The folder " + folderBackup + " does not exist")
                     folderBackup = input("[?] Which folder do you want backup : ")
                 else:
                     configReader.add_section(folderBackup)
@@ -195,7 +211,8 @@ def addSite(decrypt,crypt):
             while loop:
                 displayBanner()
                 if protocole != 'ssh' and protocole != 'ftp':
-                    print(f"[!] The {protocole} protocole is not available...")
+                    #print(f"[!] The {protocole} protocole is not available...")
+                    print("[!] The " + protocole + " protocole is not available...")
                     protocole = input("[?] Which protocole use (ssh/ftp) : ")
                 else:
                     configReader.set(folderBackup,'protocole',protocole)
@@ -205,12 +222,14 @@ def addSite(decrypt,crypt):
             # Choose the port of the protocol
             loop = True
             displayBanner()
-            port = input(f"[?] Which port do you want to use with {protocole} : ")
+            #port = input(f"[?] Which port do you want to use with {protocole} : ")
+            port = input("[?] Which port do you want to use with " + protocole + ": ")
             while loop:
                 displayBanner()
                 if int(port) < 1 or int(port) > 65535:
                     print("[!] Please, choose a port between 1 and 65535")
-                    port = input(f"[?] Which port do you want to use with {protocole} : ")
+                    #port = input(f"[?] Which port do you want to use with {protocole} : ")
+                    port = input("[?] Which port do you want to use with " + protocole + ": ")
                 else:
                     configReader.set(folderBackup,'port',port)
                     loop = False
@@ -250,7 +269,7 @@ def addSite(decrypt,crypt):
                 displayBanner()
                 passwd = input("[?] Which password use for FTP login : ")
                 configReader.set(folderBackup,'password',passwd)
-                        
+
             # ---------------------
             # If protocole is SSH |
             # ---------------------
@@ -274,7 +293,8 @@ def addSite(decrypt,crypt):
                             while loop:
                                 displayBanner()
                                 if not os.path.isfile:
-                                    print(f"[!] The key {keyPath} does not exist")
+                                    #print(f"[!] The key {keyPath} does not exist")
+                                    print("[!] The key " + keyPath + " does not exist")
                                     keyPath = input("[?] Specify the path of the private key : ")
                                 else:
                                     loop = False
@@ -320,16 +340,20 @@ def addSite(decrypt,crypt):
             loop = True
             while loop:
                 displayBanner()
-                print(f"[{folderBackup}]")
+                #print(f"[{folderBackup}]")
+                print ("["+folderBackup+"]")
                 for name,value in configReader.items(folderBackup):
-                    print(f"{name} : {value}")
+                    #print(f"{name} : {value}")
+                    print(name + " : " + value)
 
                 response = input("\nConfirm backup configuration creation (y/n)")
                 if response != 'y' and response != 'n':
                     displayBanner()
-                    print(f"[{folderBackup}]")
+                    #print(f"[{folderBackup}]")
+                    print ("["+folderBackup+"]")
                     for name,value in configReader.items(folderBackup):
-                        print(f"{name} : {value}")
+                        #print(f"{name} : {value}")
+                        print(name + " : " + value)
                     response = input("\nConfirm backup configuration creation (y/n)")
                 else:
                     loop = False
@@ -344,7 +368,7 @@ def addSite(decrypt,crypt):
             encryptIni(decrypt,crypt,password)
 
         return
-    
+
     except KeyboardInterrupt:
         displayBanner()
         encryptIni(decrypt,crypt,password)
@@ -360,18 +384,22 @@ def main():
 
 
 # -------------------------------------------------------
-#                  Define some variables                 
+#                  Define some variables
 # -------------------------------------------------------
 
     # Get home folder
     home = os.path.expanduser('~')
     # Define PyCloud folder
-    pycloudFolder = f"{home}/.PyCloud"
+
+    #pycloudFolder = f"{home}/.PyCloud"
+    pycloudFolder = home+"/.PyCloud"
     # Define INI file
     # Extension can be change for the encrypted ini file
     # The decrypt ini file must have INI extension (for configparser checking)
-    encryptedIni = f"{pycloudFolder}/config.aes"
-    decryptedIni = f"{pycloudFolder}/config.ini"
+    #encryptedIni = f"{pycloudFolder}/config.aes"
+    #decryptedIni = f"{pycloudFolder}/config.ini"
+    encryptedIni = pycloudFolder+"/config.aes"
+    decryptedIni = pycloudFolder+"/config.ini"
 
 # --------------------------------------------------------
 # ------------------ Begin of the script -----------------
@@ -415,7 +443,7 @@ def main():
         if choice == 5:
             displayBanner()
             password = input("[?] Please, enter the password to unlock ini file : ")
-            
+
 
 
         elif choice == 99:
